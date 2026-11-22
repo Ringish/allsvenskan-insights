@@ -13,6 +13,7 @@ from engine.sources.sportomedia import Sportomedia
 
 OUT = ROOT / "web" / "public" / "logos"
 SIZE = 128
+FADED = 0.35
 # Drawn at 4x and downsampled for clean edges.
 SS = 4
 
@@ -132,7 +133,11 @@ def logos(years: list[int], out: Path = OUT, offline: bool = False) -> None:
             data = images.get_bytes(key, url)
         else:
             fallback.append(tid)
-        badge(team, data).save(out / f"{tid}.png", optimize=True)
+        img = badge(team, data)
+        img.save(out / f"{tid}.png", optimize=True)
+        # Faded copy for teams that are not followed; baked in so it does not depend on GPU alpha.
+        img.putalpha(img.getchannel("A").point(lambda v: round(v * FADED)))
+        img.save(out / f"{tid}-faded.png", optimize=True)
     print(f"badges: {len(ref.teams) - len(fallback)} with logo, {len(fallback)} with initials -> {out}")
     if fallback:
         print("  initials only: " + ", ".join(fallback))

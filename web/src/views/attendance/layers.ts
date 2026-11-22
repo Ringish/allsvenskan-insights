@@ -164,7 +164,7 @@ export function buildLayers(a: Args): Layer[] {
       getElevation: (t) => (t.follow >= 0 ? 2400 : 900),
       getFillColor: (t) => {
         if (t.follow >= 0) return [...followColor(t), 255];
-        if (greyed(t)) return [...theme.muted, 140];
+        if (greyed(t)) return [...theme.muted, 70];
         const c = t.team.color;
         return [...(c ? hex(c) : theme.arc), 255 * Math.max(0.35, t.presence)];
       },
@@ -186,7 +186,7 @@ export function buildLayers(a: Args): Layer[] {
         const c = colorOf(t);
         if (!t.known) return [...c, 0];
         if (t.venue.id === a.selected) return [...theme.flare, 255];
-        return greyed(t) ? [...theme.muted, 90 + 110 * t.presence] : [...c, 120 + 135 * t.presence];
+        return greyed(t) ? [...theme.muted, 45 + 60 * t.presence] : [...c, 120 + 135 * t.presence];
       },
       material: { ambient: 0.55, diffuse: 0.65, shininess: 40, specularColor: [90, 90, 90] },
       updateTriggers: { getFillColor: [a.selected, theme.mode, followKey], getPosition: [k] },
@@ -295,28 +295,30 @@ export function buildLayers(a: Args): Layer[] {
     );
   }
 
-  // Team badges on top of the towers. Greyed-out teams draw the badge's silhouette as a grey disc.
+  // Team badges on top of the towers. Teams not followed use a pre-faded copy of their badge.
   const badgeAlpha = (t: Tower) => (t.absent || !t.team.logo ? 0 : 255 * Math.min(1, 0.25 + t.presence));
   layers.push(
     new IconLayer<Tower>({
       id: "badges",
       data: towers,
       pickable: true,
-      getIcon: (t) =>
-        greyed(t)
-          ? { id: `${t.teamId}-grey`, url: t.team.logo ? a.assetBase + t.team.logo : blank(), width: 128, height: 128, mask: true }
-          : { id: t.teamId, url: t.team.logo ? a.assetBase + t.team.logo : blank(), width: 128, height: 128 },
+      getIcon: (t) => {
+        if (!t.team.logo) return { id: "blank", url: blank(), width: 4, height: 4 };
+        const faded = greyed(t);
+        const url = a.assetBase + (faded ? t.team.logo.replace(/\.png$/, "-faded.png") : t.team.logo);
+        return { id: faded ? `${t.teamId}-faded` : t.teamId, url, width: 128, height: 128 };
+      },
       getPosition: top,
       getPixelOffset: (t) => [0, -(badgePx(t) / 2 + 3)],
       getSize: badgePx,
       sizeUnits: "pixels",
-      getColor: (t) => (greyed(t) ? [...theme.mutedBadge, badgeAlpha(t)] : [255, 255, 255, badgeAlpha(t)]),
+      getColor: (t) => [255, 255, 255, badgeAlpha(t)],
       billboard: true,
       alphaCutoff: 0.02,
       parameters: { depthCompare: "always" },
       updateTriggers: {
         getIcon: [followKey],
-        getColor: [followKey, theme.mode],
+        getColor: [followKey],
         getSize: [k, followKey],
         getPixelOffset: [k, followKey],
       },

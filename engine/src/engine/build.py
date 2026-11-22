@@ -10,6 +10,8 @@ from engine.sources.allstat import AllStat
 from engine.sources.sportomedia import FeedMatch, Sportomedia, parse_match
 
 COMPETITION = {"id": "allsvenskan-men", "name": "Allsvenskan", "gender": "men", "tier": 1}
+# The feed has a few single-digit placeholders (e.g. 1); below this a figure is treated as missing.
+MIN_CROWD = 10
 # Every 2020 match was played without spectators (COVID-19 restrictions).
 CLOSED_DOORS_YEARS = {2020}
 
@@ -156,7 +158,7 @@ def build(years: list[int]) -> list[SeasonReport]:
             home, away = ref.team(m.home_name), ref.team(m.away_name)
             teams |= {home, away}
 
-            if m.spectators:
+            if m.spectators and m.spectators >= MIN_CROWD:
                 att, att_src = m.spectators, "sportomedia"
             elif year in CLOSED_DOORS_YEARS:
                 att, att_src = 0, "closed-doors"

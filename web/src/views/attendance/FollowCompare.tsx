@@ -75,13 +75,13 @@ export function FollowCompare({ data, model, theme, dayIndex, table, followed, o
                     <Badge team={tm} size={22} />
                     <span>
                       <b>{tm.short_name}</b>
-                      <small>
+                      <small title={prev ? t.att.vs(year - 1, fmtInt(prev)) : undefined}>
                         {!row
                           ? t.att.notInSeason(year)
                           : row.average == null
                             ? t.att.noHomeYet
                             : delta != null
-                              ? `${delta >= 0 ? "▲" : "▼"} ${fmtPct(Math.abs(delta))} ${t.att.vs(year - 1, fmtInt(prev!))}`
+                              ? `${delta >= 0 ? "▲" : "▼"} ${fmtPct(Math.abs(delta))} ${t.att.vsShort(year - 1)}`
                               : t.att.played(row.count)}
                       </small>
                     </span>

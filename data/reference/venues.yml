@@ -14,7 +14,7 @@
 - {id: soderstadion, name: Söderstadion, city: Stockholm, lat: 59.295833333, lon: 18.081944444, capacity: 12882, opened: 1967, closed: 2013, wikidata: Q1776735,
    aliases: []}
 - {id: grimsta-ip, name: Grimsta IP, city: Stockholm, lat: 59.362222222, lon: 17.851666666, capacity: 4729, opened: 1963, wikidata: Q591583,
-   aliases: []}
+   aliases: [Grimsta IP 1]}
 - {id: eleda-stadion, name: Eleda Stadion, city: Malmö, lat: 55.583611111, lon: 12.987777777, capacity: 22500, opened: 2009, wikidata: Q867234,
    aliases: [Swedbank Stadion, Nya Malmö Stadion]}
 - {id: malmo-stadion, name: Malmö Stadion, city: Malmö, lat: 55.586111111, lon: 12.989166666, capacity: 26500, opened: 1958, wikidata: Q175960,
@@ -40,7 +40,7 @@
 - {id: olympia, name: Olympia, city: Helsingborg, lat: 56.049444444, lon: 12.706944444, capacity: 16000, opened: 1898, wikidata: Q638087,
    aliases: ["Olympia, Helsingborg"]}
 - {id: orjans-vall, name: Örjans vall, city: Halmstad, lat: 56.684166666, lon: 12.866388888, capacity: 15500, opened: 1922, wikidata: Q297924,
-   aliases: [Örjans Vall]}
+   aliases: [Örjans Vall, Örjans Vall A]}
 - {id: norrkoping-idrottspark, name: Platinumcars Arena, city: Norrköping, lat: 58.584166666, lon: 16.173055555, capacity: 17234, opened: 1904, wikidata: Q571624,
    aliases: [Östgötaporten, Nya Parken, PlatinumCars Arena, Norrköpings idrottspark, Idrottsparken@ifk-norrkoping]}
 - {id: behrn-arena, name: Behrn Arena, city: Örebro, lat: 59.26611111, lon: 15.22305556, capacity: 12674, opened: 1923, wikidata: Q814577,
@@ -52,17 +52,17 @@
 - {id: guldfageln-arena, name: Guldfågeln Arena, city: Kalmar, lat: 56.69070278, lon: 16.31523333, capacity: 12500, opened: 2011, wikidata: Q1421187,
    aliases: ["Guldfågeln Arena, Kalmar"]}
 - {id: fredriksskans, name: Fredriksskans IP, city: Kalmar, lat: 56.668611111, lon: 16.360833333, capacity: 9000, wikidata: Q1453337,
-   aliases: [Fredriksskans]}
+   aliases: [Fredriksskans, Fredrikskans]}
 - {id: varendsvallen, name: Värendsvallen, city: Växjö, lat: 56.881111111, lon: 14.771944444, capacity: 15062, opened: 1966, wikidata: Q501603,
    aliases: []}
 - {id: spiris-arena, name: Spiris Arena, city: Växjö, lat: 56.879722222, lon: 14.776388888, capacity: 12000, opened: 2012, wikidata: Q1583034,
-   aliases: [Myresjöhus Arena, Visma Arena]}
+   aliases: [Myresjöhus Arena, Visma Arena, Spiris Arena 1]}
 - {id: vangavallen, name: Vångavallen, city: Trelleborg, lat: 55.38680556, lon: 13.15816667, capacity: 10000, opened: 1933, wikidata: Q1779950,
    aliases: []}
 - {id: landskrona-ip, name: Landskrona IP, city: Landskrona, lat: 55.88993333, lon: 12.83761111, capacity: 10000, wikidata: Q739184,
    aliases: []}
 - {id: strandvallen, name: Strandvallen, city: Hällevik, lat: 56.0125, lon: 14.71666667, capacity: 7500, opened: 1953, wikidata: Q1848079,
-   aliases: []}
+   aliases: [Strandvallen A-plan]}
 - {id: stromvallen, name: Strömvallen, city: Gävle, lat: 60.673055555, lon: 17.1275, capacity: 6703, opened: 1903, wikidata: Q2301634,
    aliases: []}
 - {id: gavlevallen, name: Gavlevallen, city: Gävle, lat: 60.69194444, lon: 17.13444444, capacity: 6500, opened: 2015, wikidata: Q16632572,
@@ -86,9 +86,9 @@
 - {id: finnvedsvallen, name: Finnvedsvallen, city: Värnamo, lat: 57.19591667, lon: 14.04280556, capacity: 5000, wikidata: Q5450905,
    aliases: ["Finnvedsvallen, Värnamo"]}
 - {id: paskbergsvallen, name: Påskbergsvallen, city: Varberg, lat: 57.0983, lon: 12.2654, capacity: 4500, opened: 1925, wikidata: Q7264643,
-   aliases: []}
+   aliases: [Varberg Energi Arena]}  # sponsor name 2020-2022 (en.wikipedia Påskbergsvallen)
 - {id: stora-valla, name: Stora Valla, city: Degerfors, lat: 59.2383, lon: 14.4431, capacity: 12500, opened: 1938, wikidata: Q7619895,
-   aliases: []}
+   aliases: [Stora Valla A-plan]}
 - {id: tunavallen, name: Tunavallen, city: Eskilstuna, lat: 59.370667, lon: 16.495, capacity: 7800, opened: 1924, wikidata: Q1593861,
    aliases: []}
 - {id: stadsparksvallen, name: Stadsparksvallen, city: Jönköping, lat: 57.783333333, lon: 14.141944444, capacity: 5535, opened: 1902, wikidata: Q501184,

@@ -1,10 +1,11 @@
 import { useState } from "react";
-import type { AttendanceModel } from "../../data/attendance";
+import type { AttendanceModel, TeamSeason } from "../../data/attendance";
 import type { Dataset, Match } from "../../data/types";
 import { fmtDate, fmtInt, fmtPct } from "../../format";
 import { t } from "../../i18n";
 import type { SceneTheme } from "../../theme";
 import type { Timeline } from "../../timeline/useTimeline";
+import { FollowCompare } from "./FollowCompare";
 
 interface Props {
   data: Dataset;
@@ -12,10 +13,13 @@ interface Props {
   timeline: Timeline;
   theme: SceneTheme;
   mode: "matchday" | "skyline";
+  table: Map<string, TeamSeason>;
+  slots: (string | null)[];
+  followed: { id: string; slot: number }[];
   onSelectVenue: (id: string) => void;
 }
 
-export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }: Props) {
+export function SidePanel({ data, model, timeline, theme, mode, table, slots, followed, onSelectVenue }: Props) {
   // Collapsed by default on phones, where it overlays the map.
   const [open, setOpen] = useState(() => !matchMedia("(max-width: 760px)").matches);
   const day = timeline.day;
@@ -25,8 +29,12 @@ export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }:
   const delta = soFar.average != null && prev?.average ? soFar.average / prev.average - 1 : null;
   const team = (id: string) => data.teams.get(id)?.short_name ?? id;
 
+  const slotOf = (m: Match) => {
+    const s = slots.indexOf(m.home);
+    return s >= 0 ? s : slots.indexOf(m.away);
+  };
   const matchRow = (m: Match, withDate = false) => (
-    <li key={m.id}>
+    <li key={m.id} style={slotOf(m) >= 0 ? { boxShadow: `inset 3px 0 0 ${theme.follow[slotOf(m)]}` } : undefined}>
       <button className="match" onClick={() => m.venue && onSelectVenue(m.venue)} disabled={!m.venue}>
         <span className="teams">
           {team(m.home)} <span className="score">{m.hg ?? "–"}–{m.ag ?? "–"}</span> {team(m.away)}
@@ -67,6 +75,18 @@ export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }:
             {soFar.known < soFar.matches && soFar.year !== 2020 ? t.att.withoutData(soFar.matches - soFar.known) : ""}
           </div>
         </div>
+
+        {followed.length > 0 && (
+          <FollowCompare
+            data={data}
+            model={model}
+            theme={theme}
+            dayIndex={timeline.dayIndex}
+            table={table}
+            followed={followed}
+            onSelectVenue={onSelectVenue}
+          />
+        )}
 
         <section>
           <h3>{fmtDate(day.day)}</h3>

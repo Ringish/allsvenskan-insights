@@ -38,6 +38,9 @@ class CachedClient:
         self._last = time.monotonic()
 
     def _send(self, method: str, url: str, **kw) -> str:
+        return self._request(method, url, **kw).text
+
+    def _request(self, method: str, url: str, **kw) -> httpx.Response:
         delay = 2.0
         for attempt in range(5):
             self._throttle()
@@ -46,7 +49,7 @@ class CachedClient:
                 if r.status_code in (429, 500, 502, 503, 504):
                     raise httpx.HTTPStatusError("retryable", request=r.request, response=r)
                 r.raise_for_status()
-                return r.text
+                return r
             except (httpx.TransportError, httpx.HTTPStatusError):
                 if attempt == 4:
                     raise
@@ -60,6 +63,17 @@ class CachedClient:
         text = self._send("GET", url, **kw)
         self._store(key, text)
         return text
+
+    def get_bytes(self, key: str, url: str, refresh: bool = False, **kw) -> bytes:
+        p = self.path(key)
+        if not refresh and p.exists():
+            return p.read_bytes()
+        data = self._request("GET", url, **kw).content
+        p.parent.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_suffix(p.suffix + ".tmp")
+        tmp.write_bytes(data)
+        tmp.replace(p)
+        return data
 
     def post_json(self, key: str, url: str, payload: dict, refresh: bool = False, **kw) -> dict:
         if not refresh and self.cached(key):

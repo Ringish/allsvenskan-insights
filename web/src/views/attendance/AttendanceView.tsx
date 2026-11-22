@@ -9,8 +9,10 @@ import { PRESETS, type Preset, useCamera } from "../../map/useCamera";
 import type { SceneTheme } from "../../theme";
 import { Timeline } from "../../timeline/Timeline";
 import { useTimeline } from "../../timeline/useTimeline";
+import { FollowPicker } from "./FollowPicker";
 import { buildLayers, type Tower, towersFor } from "./layers";
 import { SidePanel } from "./SidePanel";
+import { useFollow } from "./useFollow";
 import { VenueHistory } from "./VenueHistory";
 
 type Mode = "matchday" | "skyline";
@@ -28,7 +30,15 @@ function dayAverage(d: MatchDay): number | null {
 
 export default function AttendanceView({ data, theme }: { data: Dataset; theme: SceneTheme }) {
   const model = useMemo(() => new AttendanceModel(data), [data]);
-  const venueOrder = useMemo(() => [...data.venues.values()].sort((a, b) => a.id.localeCompare(b.id)), [data]);
+  const teamOrder = useMemo(() => [...data.teams.values()].sort((a, b) => a.id.localeCompare(b.id)), [data]);
+  // Each team's most recent home venue, to place a team before its first home match of a season.
+  const homeOf = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const year of [...data.homes.keys()].sort((a, b) => a - b))
+      for (const [team, venue] of data.homes.get(year)!) m.set(team, venue);
+    return m;
+  }, [data]);
+  const follow = useFollow();
   const timeline = useTimeline(data.days);
   const [mode, setMode] = useState<Mode>("skyline");
   const [showGhosts, setShowGhosts] = useState(true);
@@ -47,11 +57,20 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
 
   const day = timeline.day;
   const states = mode === "matchday" ? model.matchDay(timeline.dayIndex) : model.skyline(timeline.dayIndex);
-  const towers = towersFor(states, venueOrder);
+  const table = useMemo(() => model.teamTable(timeline.dayIndex), [model, timeline.dayIndex]);
+  const seasonTeams = useMemo(
+    () => new Set(data.matches.filter((m) => m.year === day.year).flatMap((m) => [m.home, m.away])),
+    [data.matches, day.year],
+  );
 
-  const biggest = day.matches.find((m) => m.venue && data.venues.has(m.venue) && (m.att ?? 0) > 0);
+  // While following, the camera drifts to the biggest crowd among followed teams' matches.
+  const isFollowed = (m: { home: string; away: string }) => follow.slots.includes(m.home) || follow.slots.includes(m.away);
+  const candidates = day.matches.filter((m) => m.venue && data.venues.has(m.venue) && (m.att ?? 0) > 0);
+  const biggest = candidates.find(isFollowed) ?? candidates[0];
   const focusVenue = biggest ? data.venues.get(biggest.venue!)! : null;
   const camera = useCamera(timeline.playing, focusVenue ? [focusVenue.lon, focusVenue.lat] : null);
+  const scale = Math.min(1, Math.max(0.06, 2 ** ((5.35 - camera.viewState.zoom) * 0.85)));
+  const towers = towersFor(states, teamOrder, data, homeOf, follow.slots, scale);
 
   // Pulse only animates while something on screen glows.
   const glowing =
@@ -78,7 +97,8 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
     showGhosts,
     showArcs,
     pulse,
-    scale: Math.min(1, Math.max(0.06, 2 ** ((5.35 - camera.viewState.zoom) * 0.85))),
+    scale,
+    assetBase: import.meta.env.BASE_URL,
     project: size.width
       ? (() => {
           const vp = new WebMercatorViewport({ ...camera.viewState, ...size });
@@ -103,7 +123,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
     ({ object }: PickingInfo<Tower>) => {
       if (!object?.venue) return null;
       const tw = object;
-      const team = data.teams.get(tw.homeTeam ?? "")?.name ?? "";
+      const team = tw.team.name;
       const m = tw.match;
       const lines =
         mode === "skyline"
@@ -165,6 +185,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
               {t.att.awayTrips}
             </label>
           </div>
+          <FollowPicker data={data} theme={theme} year={day.year} seasonTeams={seasonTeams} follow={follow} />
           <div className="chips">
             {(Object.keys(PRESETS) as Preset[]).map((p) => (
               <button
@@ -197,12 +218,25 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
             matches={model.venueHistory(selected)}
             data={data}
             currentYear={day.year}
+            theme={theme}
+            slots={follow.slots}
+            onToggleFollow={follow.toggle}
             onClose={() => setSelected(null)}
           />
         )}
       </div>
 
-      <SidePanel data={data} model={model} timeline={timeline} theme={theme} mode={mode} onSelectVenue={selectVenue} />
+      <SidePanel
+        data={data}
+        model={model}
+        timeline={timeline}
+        theme={theme}
+        mode={mode}
+        table={table}
+        slots={follow.slots}
+        followed={follow.followed}
+        onSelectVenue={selectVenue}
+      />
 
       <Timeline days={data.days} timeline={timeline} value={dayAverage} valueLabel={t.att.avgCrowd} />
     </div>

@@ -18,7 +18,12 @@ def _write(path, data) -> None:
 def export() -> None:
     con = db.connect()
     teams = [
-        dict(r)
+        {
+            **dict(r),
+            "logo": f"logos/{r['id']}.png"
+            if (WEB_DATA.parent / "logos" / f"{r['id']}.png").exists()
+            else None,
+        }
         for r in con.execute("SELECT id, name, short_name, city, color, color2 FROM team ORDER BY name")
     ]
     venues = [

@@ -104,3 +104,41 @@ def test_upsert_is_idempotent(tmp_path):
     db.upsert(con, "team", row)
     db.upsert(con, "team", {**row, "name": "Y"})
     assert tuple(con.execute("SELECT COUNT(*), MAX(name) FROM team").fetchone()) == (1, "Y")
+
+
+def test_badge_with_and_without_logo():
+    import io
+
+    from PIL import Image
+
+    from engine.logos import SIZE, _initials, badge
+
+    team = {"id": "x", "name": "IFK Göteborg", "short": "Göteborg", "color": "#1F5FBF"}
+    assert badge(team, None).size == (SIZE, SIZE)
+    buf = io.BytesIO()
+    Image.new("RGBA", (300, 200), (255, 0, 0, 255)).save(buf, "PNG")
+    img = badge(team, buf.getvalue())
+    # Logo sits on a white disc; the center pixel comes from the logo.
+    assert img.getpixel((SIZE // 2, SIZE // 2))[:3] == (255, 0, 0)
+    assert _initials("Göteborg") == "GÖT"
+    assert _initials("V Frölunda") == "VF"
+
+
+def test_logo_urls_newest_season_wins():
+    from engine.logos import logo_urls
+
+    class Feed:
+        class client:
+            @staticmethod
+            def cached(key):
+                return True
+
+        def teams(self, year):
+            return [
+                {"name": "AIK", "displayName": "AIK", "logoImageUrl": f"https://x/{year}.png"},
+                {"name": "Okänt FF", "displayName": None, "logoImageUrl": None},
+            ]
+
+    urls, unknown = logo_urls([2023, 2024], Reference.load(), Feed())
+    assert urls["aik"] == "https://x/2024.png"
+    assert unknown == {"Okänt FF"}

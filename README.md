@@ -16,6 +16,7 @@ data/     reference YAML (committed), raw cache + SQLite (gitignored)
 | [plood/AllStat](https://github.com/plood/AllStat) | attendance gaps 2000-2015 | Only fills matches where the feed has none. |
 | en.wikipedia season pages | validation only | Per-team averages; never merged into the data. |
 | Wikidata | venue coordinates, capacity, opening year | Copied into `data/reference/venues.yml`. |
+| Sportomedia `teamsForLeague` | club logos | `engine logos` draws each logo on a round badge; clubs without a logo get initials in the club color. `--offline` renders from cache only. |
 
 svenskfotboll.se is not used: its robots.txt disallows the results, match and API paths, and it serves a Cloudflare challenge.
 
@@ -29,6 +30,7 @@ uv sync
 uv run engine fetch --seasons 2000-2025   # ~5,500 requests at 1/s, resumable
 uv run engine build --seasons 2000-2025   # SQLite from cache, prints a per-season report
 uv run engine validate --seasons 2000-2025 --fetch
+uv run engine logos --seasons 2000-2025   # team logos -> round badges in web/public/logos
 uv run engine export                       # -> web/public/data
 uv run pytest
 ```
@@ -51,6 +53,8 @@ Views are registered in `web/src/views/registry.ts`. Shared pieces for new insig
 
 ### Crowd skyline
 
-3D towers per stadium. Height = attendance (match day mode, fading over the following days) or season-to-date average (skyline mode). Color = fill rate against capacity; the glass column is capacity; the base ring is the home team. Arcs run from the away team's home ground. Venue and season records fire a light beam. Click a tower or a match for the venue's full history.
+3D towers per team, at the venue of its home match (teams sharing a venue stand side by side). Height = home attendance (match day mode, fading over the following days) or season-to-date home average (skyline mode). Color = fill rate against capacity; the glass column is capacity; the badge on top and the base ring show the team. Arcs run from the away team's home ground. Venue and season records fire a light beam. Click a tower or a match for the venue's full history.
+
+Follow up to 4 teams to compare them: followed teams keep a fixed color slot, other towers dim, and the panel shows their home average, rank and fill rate plus their running average through the season. The choice is remembered in the browser.
 
 Keys: space play/pause, arrows day, Alt+arrows round, Shift+arrows season.

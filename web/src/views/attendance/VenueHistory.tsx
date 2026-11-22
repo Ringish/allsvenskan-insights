@@ -2,12 +2,17 @@ import { useMemo, useState } from "react";
 import type { Dataset, Match, Venue } from "../../data/types";
 import { fmtInt } from "../../format";
 import { t } from "../../i18n";
+import type { SceneTheme } from "../../theme";
+import { Badge } from "./FollowPicker";
 
 interface Props {
   venue: Venue;
   matches: Match[];
   data: Dataset;
   currentYear: number;
+  theme: SceneTheme;
+  slots: (string | null)[];
+  onToggleFollow: (team: string) => void;
   onClose: () => void;
 }
 
@@ -16,7 +21,7 @@ const H = 170;
 const PAD = { l: 40, r: 10, t: 12, b: 22 };
 
 /** Every Allsvenskan match at a venue (dots) with the season average (line). */
-export function VenueHistory({ venue, matches, data, currentYear, onClose }: Props) {
+export function VenueHistory({ venue, matches, data, currentYear, theme, slots, onToggleFollow, onClose }: Props) {
   const [hover, setHover] = useState<number | null>(null);
   const years = data.meta.seasons.map((s) => s.year);
   const y0 = years[0];
@@ -53,7 +58,28 @@ export function VenueHistory({ venue, matches, data, currentYear, onClose }: Pro
           .filter(Boolean)
           .join(" · ")}
       </div>
-      <div className="tip-sub">{t.att.homeOf(teams.map((id) => data.teams.get(id)?.short_name ?? id).join(", "))}</div>
+      <div className="venue-teams">
+        {teams.map((id) => {
+          const tm = data.teams.get(id);
+          if (!tm) return null;
+          const slot = slots.indexOf(id);
+          const full = slot < 0 && !slots.includes(null);
+          return (
+            <button
+              key={id}
+              className={`chip ${slot >= 0 ? "on" : ""}`}
+              aria-pressed={slot >= 0}
+              disabled={full}
+              title={full ? t.att.maxFollow : undefined}
+              style={slot >= 0 ? { boxShadow: `inset 3px 0 0 ${theme.follow[slot]}` } : undefined}
+              onClick={() => onToggleFollow(id)}
+            >
+              <Badge team={tm} size={18} />
+              {tm.short_name} · {slot >= 0 ? t.att.following : t.att.followBtn}
+            </button>
+          );
+        })}
+      </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="venue-chart" onPointerLeave={() => setHover(null)}>
         {ticks.map((t) => (

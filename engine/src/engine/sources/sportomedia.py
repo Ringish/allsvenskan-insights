@@ -30,6 +30,12 @@ SEASON_MATCHES_Q = """query season($league: String!, $year: Int!) {
   }
 }"""
 
+TEAMS_Q = """query teams($league: String!, $year: Int!) {
+  teamsForLeague(configLeagueName: $league, configSeasonStartYear: $year) {
+    teams { abbrv name displayName fogisId logoImageUrl }
+  }
+}"""
+
 MATCH_Q = """query match($league: String!, $year: Int!, $id: Int!) {
   match(configLeagueName: $league, configSeasonStartYear: $year, id: $id) {
     match {
@@ -82,6 +88,10 @@ class Sportomedia:
     def season_match_ids(self, year: int, refresh: bool = False) -> list[int]:
         data = self._q(f"{year}/season.json", SEASON_MATCHES_Q, {"year": year}, refresh=refresh)
         return [m["id"] for m in data["matchesForLeague"]["matches"]]
+
+    def teams(self, year: int, refresh: bool = False) -> list[dict]:
+        data = self._q(f"{year}/teams.json", TEAMS_Q, {"year": year}, refresh=refresh)
+        return data["teamsForLeague"]["teams"] or []
 
     def match(self, year: int, match_id: int, refresh: bool = False) -> FeedMatch:
         data = self._q(

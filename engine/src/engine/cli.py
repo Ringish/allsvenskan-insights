@@ -41,6 +41,12 @@ def cmd_validate(args: argparse.Namespace) -> None:
     sys.exit(validate(parse_years(args.seasons), fetch=args.fetch))
 
 
+def cmd_logos(args: argparse.Namespace) -> None:
+    from engine.logos import logos
+
+    logos(parse_years(args.seasons), offline=args.offline)
+
+
 def cmd_export(args: argparse.Namespace) -> None:
     from engine.export import export
 
@@ -64,6 +70,11 @@ def main() -> None:
     v.add_argument("--seasons", default="2000-2025")
     v.add_argument("--fetch", action="store_true", help="allow fetching Wikipedia pages not yet cached")
     v.set_defaults(fn=cmd_validate)
+
+    lg = sub.add_parser("logos", help="fetch team logos and render badges into web/public/logos")
+    lg.add_argument("--seasons", default="2000-2025")
+    lg.add_argument("--offline", action="store_true", help="only use cached team lists and logos")
+    lg.set_defaults(fn=cmd_logos)
 
     e = sub.add_parser("export", help="export SQLite to static JSON for the web app")
     e.set_defaults(fn=cmd_export)

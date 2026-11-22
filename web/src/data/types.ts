@@ -5,6 +5,8 @@ export interface Team {
   city: string | null;
   color: string | null;
   color2: string | null;
+  /** Round badge image, relative to the app base. */
+  logo: string | null;
 }
 
 export interface Venue {

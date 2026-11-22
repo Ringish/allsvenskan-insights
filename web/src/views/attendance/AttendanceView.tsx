@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AttendanceModel } from "../../data/attendance";
 import type { Dataset, MatchDay } from "../../data/types";
 import { fmtInt, fmtPct } from "../../format";
+import { t } from "../../i18n";
 import { PRESETS, type Preset, useCamera } from "../../map/useCamera";
 import type { SceneTheme } from "../../theme";
 import { Timeline } from "../../timeline/Timeline";
@@ -101,22 +102,22 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
   const tooltip = useCallback(
     ({ object }: PickingInfo<Tower>) => {
       if (!object?.venue) return null;
-      const t = object;
-      const team = data.teams.get(t.homeTeam ?? "")?.name ?? "";
-      const m = t.match;
+      const tw = object;
+      const team = data.teams.get(tw.homeTeam ?? "")?.name ?? "";
+      const m = tw.match;
       const lines =
         mode === "skyline"
           ? [
-              t.known ? `Season average <b>${fmtInt(t.value!)}</b> (${t.count} matches)` : "No attendance data",
-              t.fill != null ? `${fmtPct(t.fill)} of capacity` : "",
+              tw.known ? t.att.seasonAvg(fmtInt(tw.value!), tw.count) : t.att.noData,
+              tw.fill != null ? t.att.ofCapacity(fmtPct(tw.fill)) : "",
             ]
           : [
               m ? `${data.teams.get(m.home)?.short_name} ${m.hg ?? ""}–${m.ag ?? ""} ${data.teams.get(m.away)?.short_name}` : "",
-              t.closedDoors ? "Played without spectators" : t.known ? `<b>${fmtInt(t.value!)}</b> spectators` : "Attendance unknown",
-              t.fill != null ? `${fmtPct(t.fill)} of capacity` : "",
+              tw.closedDoors ? t.att.closedDoors : tw.known ? t.att.spectators(fmtInt(tw.value!)) : t.att.unknown,
+              tw.fill != null ? t.att.ofCapacity(fmtPct(tw.fill)) : "",
             ];
       return {
-        html: `<div class="tip-title">${t.venue.name}</div><div class="tip-sub">${team}</div>${lines
+        html: `<div class="tip-title">${tw.venue.name}</div><div class="tip-sub">${team}</div>${lines
           .filter(Boolean)
           .map((l) => `<div>${l}</div>`)
           .join("")}`,
@@ -142,11 +143,11 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
         />
 
         <div className="map-controls">
-          <div className="segmented" role="radiogroup" aria-label="Mode">
+          <div className="segmented" role="radiogroup" aria-label={t.att.mode}>
             {(
               [
-                ["skyline", "Season skyline"],
-                ["matchday", "Match day"],
+                ["skyline", t.att.skyline],
+                ["matchday", t.att.matchday],
               ] as const
             ).map(([k, label]) => (
               <button key={k} role="radio" aria-checked={mode === k} className={mode === k ? "on" : ""} onClick={() => setMode(k)}>
@@ -157,11 +158,11 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
           <div className="chips">
             <label className="chip">
               <input type="checkbox" checked={showGhosts} onChange={(e) => setShowGhosts(e.target.checked)} />
-              Capacity
+              {t.att.capacity}
             </label>
             <label className="chip">
               <input type="checkbox" checked={showArcs} onChange={(e) => setShowArcs(e.target.checked)} />
-              Away trips
+              {t.att.awayTrips}
             </label>
           </div>
           <div className="chips">
@@ -174,21 +175,21 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
                   camera.flyTo(PRESETS[p]);
                 }}
               >
-                {p}
+                {t.att.presets[p]}
               </button>
             ))}
             <button
               className={`chip ${camera.auto ? "on" : ""}`}
               aria-pressed={camera.auto}
               onClick={() => camera.setAuto(!camera.auto)}
-              title="Orbit and follow the biggest crowd while playing"
+              title={t.att.autoCameraTitle}
             >
-              Auto camera
+              {t.att.autoCamera}
             </button>
           </div>
         </div>
 
-        {day.year === 2020 && <div className="banner">2020: every match played without spectators</div>}
+        {day.year === 2020 && <div className="banner">{t.att.closedBanner}</div>}
 
         {selected && data.venues.get(selected) && (
           <VenueHistory
@@ -203,7 +204,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
 
       <SidePanel data={data} model={model} timeline={timeline} theme={theme} mode={mode} onSelectVenue={selectVenue} />
 
-      <Timeline days={data.days} timeline={timeline} value={dayAverage} valueLabel="avg crowd" />
+      <Timeline days={data.days} timeline={timeline} value={dayAverage} valueLabel={t.att.avgCrowd} />
     </div>
   );
 }

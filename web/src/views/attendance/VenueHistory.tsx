@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Dataset, Match, Venue } from "../../data/types";
 import { fmtInt } from "../../format";
+import { t } from "../../i18n";
 
 interface Props {
   venue: Venue;
@@ -42,17 +43,17 @@ export function VenueHistory({ venue, matches, data, currentYear, onClose }: Pro
   const ticks = [0, max / 2, max];
 
   return (
-    <div className="venue-card" role="dialog" aria-label={`${venue.name} attendance history`}>
-      <button className="close" onClick={onClose} aria-label="Close">
+    <div className="venue-card" role="dialog" aria-label={t.att.history(venue.name)}>
+      <button className="close" onClick={onClose} aria-label={t.att.close}>
         ×
       </button>
       <div className="tip-title">{venue.name}</div>
       <div className="tip-sub">
-        {[venue.city, venue.capacity ? `capacity ${fmtInt(venue.capacity)}` : null, venue.opened ? `opened ${venue.opened}` : null]
+        {[venue.city, venue.capacity ? t.att.capacityN(fmtInt(venue.capacity)) : null, venue.opened ? t.att.opened(venue.opened) : null]
           .filter(Boolean)
           .join(" · ")}
       </div>
-      <div className="tip-sub">Home of {teams.map((t) => data.teams.get(t)?.short_name ?? t).join(", ")}</div>
+      <div className="tip-sub">{t.att.homeOf(teams.map((id) => data.teams.get(id)?.short_name ?? id).join(", "))}</div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="venue-chart" onPointerLeave={() => setHover(null)}>
         {ticks.map((t) => (
@@ -73,7 +74,7 @@ export function VenueHistory({ venue, matches, data, currentYear, onClose }: Pro
           <>
             <line x1={PAD.l} x2={W - PAD.r} y1={y(venue.capacity)} y2={y(venue.capacity)} className="capacity" />
             <text x={W - PAD.r} y={y(venue.capacity) - 4} className="axis" textAnchor="end">
-              capacity
+              {t.att.capacityAxis}
             </text>
           </>
         )}
@@ -102,14 +103,14 @@ export function VenueHistory({ venue, matches, data, currentYear, onClose }: Pro
       <div className="venue-readout">
         {hs ? (
           <>
-            <b>{hs.year}</b> average {fmtInt(hs.avg)} · {hs.n} matches · high {fmtInt(hs.max)}
+            <b>{hs.year}</b> {t.att.readout(fmtInt(hs.avg), hs.n, fmtInt(hs.max))}
           </>
         ) : hover != null ? (
           <>
-            <b>{hover}</b> no Allsvenskan matches with attendance here
+            <b>{hover}</b> {t.att.readoutNone}
           </>
         ) : (
-          <>Dots are matches, the line is the season average. Hover a season.</>
+          <>{t.att.readoutHint}</>
         )}
       </div>
     </div>

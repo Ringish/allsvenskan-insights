@@ -1,5 +1,6 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from "react";
 import type { Dataset } from "../data/types";
+import type { Dict } from "../i18n";
 import type { SceneTheme } from "../theme";
 
 export interface ViewProps {
@@ -9,8 +10,7 @@ export interface ViewProps {
 
 export interface InsightView {
   id: string;
-  title: string;
-  description: string;
+  strings: (t: Dict) => { title: string; description: string };
   component: LazyExoticComponent<ComponentType<ViewProps>>;
 }
 
@@ -18,8 +18,7 @@ export interface InsightView {
 export const VIEWS: InsightView[] = [
   {
     id: "attendance",
-    title: "Crowd skyline",
-    description: "Attendance at every Allsvenskan stadium since 2000, as 3D towers over time.",
+    strings: (t) => t.views.attendance,
     component: lazy(() => import("./attendance/AttendanceView")),
   },
 ];

@@ -4,6 +4,7 @@ import type { AttendanceModel } from "../../data/attendance";
 import type { Dataset, Match, Venue } from "../../data/types";
 import { LAND_H, neighbours, sweden } from "../../map/basemap";
 import { fmtInt } from "../../format";
+import { t } from "../../i18n";
 import { hex, rampColor, type RGB, type SceneTheme } from "../../theme";
 import type { VenueState } from "../../data/attendance";
 
@@ -235,7 +236,7 @@ export function buildLayers(a: Args): Layer[] {
     })),
   ];
   const flareLabels = flares.map((f) => ({
-      text: `${f.kind === "venue" ? "Venue record" : "Season high"} ${fmtInt(f.m.att!)}`,
+      text: `${f.kind === "venue" ? t.att.venueRecord : t.att.seasonHigh} ${fmtInt(f.m.att!)}`,
       position: pos(f.v, ground + ((f.m.att ?? 0) * METERS_PER_SPECTATOR + 45_000) * k),
       size: 14,
     }));

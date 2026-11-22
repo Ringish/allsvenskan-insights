@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { loadDataset } from "./data/load";
 import type { Dataset } from "./data/types";
+import { t, useLang } from "./i18n";
 import { THEMES, useThemeMode } from "./theme";
 import { VIEWS } from "./views/registry";
 
@@ -14,6 +15,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState(viewFromHash);
   const [mode, pref, setPref] = useThemeMode();
+  const [lang, setLang] = useLang();
 
   useEffect(() => {
     loadDataset().then(setData, (e: Error) => setError(e.message));
@@ -34,22 +36,25 @@ export function App() {
         </div>
         <nav className="views">
           {VIEWS.map((v) => (
-            <a key={v.id} href={`#${v.id}`} className={v.id === view.id ? "on" : ""} title={v.description}>
-              {v.title}
+            <a key={v.id} href={`#${v.id}`} className={v.id === view.id ? "on" : ""} title={v.strings(t).description}>
+              {v.strings(t).title}
             </a>
           ))}
         </nav>
-        <button className="theme-toggle" onClick={() => setPref(nextPref)} title={`Theme: ${pref}`}>
-          {pref === "system" ? "Auto" : pref === "dark" ? "Dark" : "Light"}
+        <button className="theme-toggle" onClick={() => setLang(lang === "sv" ? "en" : "sv")} title={t.langTitle}>
+          {lang === "sv" ? "EN" : "SV"}
+        </button>
+        <button className="theme-toggle" onClick={() => setPref(nextPref)} title={t.theme.title}>
+          {t.theme[pref]}
         </button>
       </header>
       <main>
         {error ? (
-          <div className="state">Could not load data: {error}. Run the engine export first.</div>
+          <div className="state">{t.loadError(error)}</div>
         ) : !data ? (
-          <div className="state">Loading matches…</div>
+          <div className="state">{t.loading}</div>
         ) : (
-          <Suspense fallback={<div className="state">Loading view…</div>}>
+          <Suspense fallback={<div className="state">{t.loadingView}</div>}>
             <View data={data} theme={THEMES[mode]} />
           </Suspense>
         )}

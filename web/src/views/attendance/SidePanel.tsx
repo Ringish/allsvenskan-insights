@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { AttendanceModel } from "../../data/attendance";
 import type { Dataset, Match } from "../../data/types";
-import { fmtDate, fmtInt } from "../../format";
+import { fmtDate, fmtInt, fmtPct } from "../../format";
+import { t } from "../../i18n";
 import type { SceneTheme } from "../../theme";
 import type { Timeline } from "../../timeline/useTimeline";
 
@@ -31,16 +32,16 @@ export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }:
           {team(m.home)} <span className="score">{m.hg ?? "–"}–{m.ag ?? "–"}</span> {team(m.away)}
         </span>
         <span className="att">
-          {m.attSrc === "closed-doors" ? "no crowd" : m.att == null ? "unknown" : fmtInt(m.att)}
+          {m.attSrc === "closed-doors" ? t.att.noCrowd : m.att == null ? t.att.unknownShort : fmtInt(m.att)}
           {model.records.has(m.id) && (
-            <span className="record" title={model.records.get(m.id) === "venue" ? "Venue record" : "Season high"}>
-              {model.records.get(m.id) === "venue" ? "Record" : "High"}
+            <span className="record" title={model.records.get(m.id) === "venue" ? t.att.venueRecord : t.att.seasonHigh}>
+              {model.records.get(m.id) === "venue" ? t.att.recordBadge : t.att.highBadge}
             </span>
           )}
         </span>
         <span className="where">
           {withDate ? `${fmtDate(m.day)} · ` : ""}
-          {m.venue ? data.venues.get(m.venue)?.name : "Venue unknown"}
+          {m.venue ? data.venues.get(m.venue)?.name : t.att.venueUnknown}
         </span>
       </button>
     </li>
@@ -49,21 +50,21 @@ export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }:
   return (
     <aside className={`panel ${open ? "open" : ""}`}>
       <button className="panel-toggle" onClick={() => setOpen(!open)} aria-expanded={open}>
-        {open ? "Hide details" : "Details"}
+        {open ? t.att.hideDetails : t.att.details}
       </button>
       <div className="panel-body">
         <div className="eyebrow">Allsvenskan {day.year}</div>
         <div className="hero">
-          <div className="hero-label">League average so far</div>
+          <div className="hero-label">{t.att.leagueAvg}</div>
           <div className="hero-value">{soFar.average != null ? fmtInt(soFar.average) : "–"}</div>
           {delta != null && (
             <div className={`delta ${delta >= 0 ? "up" : "down"}`}>
-              {delta >= 0 ? "▲" : "▼"} {Math.abs(Math.round(delta * 100))}% vs {day.year - 1} ({fmtInt(prev!.average!)})
+              {delta >= 0 ? "▲" : "▼"} {fmtPct(Math.abs(delta))} {t.att.vs(day.year - 1, fmtInt(prev!.average!))}
             </div>
           )}
           <div className="hero-sub">
-            {soFar.matches} matches played
-            {soFar.known < soFar.matches && soFar.year !== 2020 ? `, ${soFar.matches - soFar.known} without attendance data` : ""}
+            {t.att.played(soFar.matches)}
+            {soFar.known < soFar.matches && soFar.year !== 2020 ? t.att.withoutData(soFar.matches - soFar.known) : ""}
           </div>
         </div>
 
@@ -73,30 +74,27 @@ export function SidePanel({ data, model, timeline, theme, mode, onSelectVenue }:
         </section>
 
         <section>
-          <h3>Top crowds {day.year} so far</h3>
+          <h3>{t.att.topCrowds(day.year)}</h3>
           <ol className="matches top">{soFar.top.map((m) => matchRow(m, true))}</ol>
         </section>
 
         <section className="legend">
-          <h3>How to read</h3>
+          <h3>{t.att.howToRead}</h3>
           <div className="legend-row">
             <span className="ramp" style={{ background: `linear-gradient(90deg, ${theme.fillRamp.join(",")})` }} />
             <span className="ramp-labels">
-              <span>empty</span>
-              <span>sold out</span>
+              <span>{t.att.empty}</span>
+              <span>{t.att.soldOut}</span>
             </span>
           </div>
           <p>
-            Tower height is {mode === "skyline" ? "the season-to-date average at the venue" : "the attendance, fading in the days after the match"}.
-            Color is how full the stadium was. The glass column around it is capacity, and the colored base is the home team.
-            Arcs run from the away team's home ground. A hollow ring means no attendance figure.
+            {t.att.legendHeight(mode === "skyline")} {t.att.legendRest}
           </p>
         </section>
 
         {seasonMeta && (
           <p className="source">
-            {seasonMeta.withAttendance} of {seasonMeta.matches} matches in {day.year} have attendance. Source: allsvenskan.se data
-            feed, gaps filled from AllStat where available.
+            {t.att.sourceNote(seasonMeta.withAttendance, seasonMeta.matches, day.year)}
           </p>
         )}
       </div>

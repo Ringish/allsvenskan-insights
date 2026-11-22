@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import type { MatchDay } from "../data/types";
 import { fmtDate, fmtInt } from "../format";
+import { t } from "../i18n";
 import { SPEEDS, type Timeline as TL } from "./useTimeline";
 
 interface Props {
@@ -77,7 +78,7 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
             if (!timeline.playing && timeline.dayIndex >= n - 1) timeline.setDayIndex(0);
             timeline.setPlaying(!timeline.playing);
           }}
-          aria-label={timeline.playing ? "Pause" : "Play"}
+          aria-label={timeline.playing ? t.timeline.pause : t.timeline.play}
           title="Space"
         >
           {timeline.playing ? (
@@ -91,7 +92,7 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
             </svg>
           )}
         </button>
-        <div className="speeds" role="radiogroup" aria-label="Speed">
+        <div className="speeds" role="radiogroup" aria-label={t.timeline.speed}>
           {SPEEDS.map((s) => (
             <button
               key={s}
@@ -106,7 +107,7 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
         </div>
         <div className="timeline-date">
           <span className="date">{fmtDate(timeline.day.day)}</span>
-          <span className="hint">← → day · ⌥ round · ⇧ season</span>
+          <span className="hint">{t.timeline.hint}</span>
         </div>
       </div>
 
@@ -118,7 +119,7 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
         onPointerLeave={() => setHover(null)}
         role="slider"
         tabIndex={0}
-        aria-label="Timeline"
+        aria-label={t.timeline.label}
         aria-valuemin={0}
         aria-valuemax={n - 1}
         aria-valuenow={timeline.dayIndex}
@@ -153,8 +154,8 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
           <div className="track-tip" style={{ left: hover.x }}>
             <b>{fmtDate(hd.day)}</b>
             <span>
-              {hd.matches.length} matches · {valueLabel}{" "}
-              {bars[hover.i] == null ? "missing" : fmtInt(bars[hover.i]!)}
+              {t.timeline.matches(hd.matches.length)} · {valueLabel}{" "}
+              {bars[hover.i] == null ? t.timeline.missing : fmtInt(bars[hover.i]!)}
             </span>
           </div>
         )}

@@ -1,0 +1,9 @@
+data/raw/
+data/*.sqlite
+node_modules/
+web/dist/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.DS_Store

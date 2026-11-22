@@ -57,4 +57,6 @@ Views are registered in `web/src/views/registry.ts`. Shared pieces for new insig
 
 Follow up to 4 teams to compare them: followed teams keep a fixed color slot, other towers dim, and the panel shows their home average, rank and fill rate plus their running average through the season. The choice is remembered in the browser.
 
-Keys: space play/pause, arrows day, Alt+arrows round, Shift+arrows season.
+The timeline steps by round (default) or by match day. A round stops on the day by which 75% of its matches are played, so a postponed match is shown with a later round instead of holding the round open.
+
+Keys: space play/pause, arrows one step (round or day), Shift+arrows season.

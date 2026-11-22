@@ -89,8 +89,12 @@ export function SidePanel({ data, model, timeline, theme, mode, table, slots, fo
         )}
 
         <section>
-          <h3>{fmtDate(day.day)}</h3>
-          <ul className="matches">{day.matches.map((m) => matchRow(m))}</ul>
+          <h3>
+            {timeline.unit === "round" && timeline.round != null
+              ? `${t.timeline.roundN(timeline.round)} · ${fmtDate(day.day)}`
+              : fmtDate(day.day)}
+          </h3>
+          <ul className="matches">{timeline.matches.map((m) => matchRow(m, timeline.unit === "round"))}</ul>
         </section>
 
         <section>

@@ -92,6 +92,20 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
             </svg>
           )}
         </button>
+        <div className="speed-row">
+        <div className="speeds" role="radiogroup" aria-label={t.timeline.stepBy}>
+          {(["round", "day"] as const).map((u) => (
+            <button
+              key={u}
+              role="radio"
+              aria-checked={timeline.unit === u}
+              className={timeline.unit === u ? "on" : ""}
+              onClick={() => timeline.setUnit(u)}
+            >
+              {t.timeline[u]}
+            </button>
+          ))}
+        </div>
         <div className="speeds" role="radiogroup" aria-label={t.timeline.speed}>
           {SPEEDS.map((s) => (
             <button
@@ -105,8 +119,14 @@ export function Timeline({ days, timeline, value, valueLabel }: Props) {
             </button>
           ))}
         </div>
+        </div>
         <div className="timeline-date">
-          <span className="date">{fmtDate(timeline.day.day)}</span>
+          <span className="date">
+            {timeline.unit === "round" && timeline.round != null && (
+              <span className="round">{t.timeline.roundN(timeline.round)} · </span>
+            )}
+            {fmtDate(timeline.day.day)}
+          </span>
           <span className="hint">{t.timeline.hint}</span>
         </div>
       </div>

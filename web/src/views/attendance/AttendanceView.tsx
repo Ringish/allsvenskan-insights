@@ -66,7 +66,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
 
   // While following, the camera drifts to the biggest crowd among followed teams' matches.
   const isFollowed = (m: { home: string; away: string }) => follow.slots.includes(m.home) || follow.slots.includes(m.away);
-  const candidates = day.matches.filter((m) => m.venue && data.venues.has(m.venue) && (m.att ?? 0) > 0);
+  const candidates = timeline.matches.filter((m) => m.venue && data.venues.has(m.venue) && (m.att ?? 0) > 0);
   const biggest = candidates.find(isFollowed) ?? candidates[0];
   const focusVenue = biggest ? data.venues.get(biggest.venue!)! : null;
   const camera = useCamera(timeline.playing, focusVenue ? [focusVenue.lon, focusVenue.lat] : null);
@@ -75,7 +75,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
 
   // Pulse only animates while something on screen glows.
   const glowing =
-    day.matches.some((m) => model.records.has(m.id)) || towers.some((t) => t.known && (t.fill ?? 0) >= 0.95);
+    timeline.matches.some((m) => model.records.has(m.id)) || towers.some((t) => t.known && (t.fill ?? 0) >= 0.95);
   useEffect(() => {
     if (!glowing) return;
     let raf = 0;
@@ -92,7 +92,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
     model,
     theme,
     towers,
-    todays: day.matches,
+    todays: timeline.matches,
     year: day.year,
     selected,
     showGhosts,

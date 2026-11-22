@@ -1,0 +1,23 @@
+# Home grounds for team-seasons where the feed names no arena and no nearby season does.
+# Applied only to matches without a feed arena. Sources noted per entry.
+if-elfsborg:
+  - {venue: ryavallen, to: 2004}  # Borås Arena replaced Ryavallen in 2005
+vastra-frolunda-if:
+  - {venue: ruddalens-ip}  # en.wikipedia Ruddalens IP / 2000 match list
+landskrona-bois:
+  - {venue: landskrona-ip}
+enkopings-sk:
+  - {venue: enavallen}
+osters-if:
+  - {venue: varendsvallen, to: 2011}
+assyriska-ff:
+  - {venue: barsta-ip, to: 2005}  # en.wikipedia Bårsta IP; some 2005 matches were at Råsunda, which ones is unknown
+# en.wikipedia Gamla Ullevi (1916): home of GAIS, IFK Göteborg and Örgryte until demolition in January 2007.
+ifk-goteborg:
+  - {venue: gamla-ullevi, to: 2006}
+gais:
+  - {venue: gamla-ullevi, to: 2006}
+orgryte-is:
+  - {venue: gamla-ullevi, to: 2006}
+hammarby:
+  - {venue: soderstadion, to: 2012}  # 2008 feed names one match each at Söderstadion and Råsunda

@@ -25,9 +25,15 @@ class CachedClient:
     each success eases it back toward `min_interval` by 5%."""
 
     def __init__(
-        self, source: str, min_interval: float = 1.0, raw_dir: Path = RAW, max_interval: float = 60.0
+        self,
+        source: str,
+        min_interval: float = 1.0,
+        raw_dir: Path = RAW,
+        max_interval: float = 60.0,
+        attempts: int = 6,
     ):
         self.dir = raw_dir / source
+        self.attempts = attempts
         self.min_interval = min_interval
         self.max_interval = max_interval
         self.interval = min_interval
@@ -59,7 +65,7 @@ class CachedClient:
         return self._request(method, url, **kw).text
 
     def _request(self, method: str, url: str, **kw) -> httpx.Response:
-        attempts = 6
+        attempts = self.attempts
         for attempt in range(attempts):
             self._throttle()
             try:

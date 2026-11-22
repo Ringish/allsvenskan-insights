@@ -16,7 +16,7 @@ data/     reference YAML (committed), raw cache + SQLite (gitignored)
 | [plood/AllStat](https://github.com/plood/AllStat) | attendance gaps 2000-2015 | Only fills matches where the feed has none. |
 | en.wikipedia season pages | validation only | Per-team averages; never merged into the data. |
 | Wikidata | venue coordinates, capacity, opening year | Copied into `data/reference/venues.yml`. |
-| Sportomedia `teamsForLeague` | club logos | `engine logos` draws each logo on a round badge; clubs without a logo get initials in the club color. `--offline` renders from cache only. |
+| Sportomedia `teamsForLeague`, Wikipedia | club logos | `engine logos` draws each logo on a round badge. When the feed has no logo or its host is gone, the team's `logo_file` in teams.yml is fetched from Wikipedia; otherwise initials in the club color. `--offline` renders from cache only. |
 
 svenskfotboll.se is not used: its robots.txt disallows the results, match and API paths, and it serves a Cloudflare challenge.
 
@@ -27,15 +27,15 @@ Attendance semantics: `NULL` = unknown, `0` = played without spectators (all of 
 ```
 cd engine
 uv sync
-uv run engine fetch --seasons 2000-2025   # ~5,500 requests at 1/s, resumable
-uv run engine build --seasons 2000-2025   # SQLite from cache, prints a per-season report
-uv run engine validate --seasons 2000-2025 --fetch
-uv run engine logos --seasons 2000-2025   # team logos -> round badges in web/public/logos
+uv run engine fetch --seasons 2026-2000   # ~6,000 requests, newest first, adaptive pacing, resumable
+uv run engine build --seasons 2000-2026   # SQLite from cache, prints a per-season report
+uv run engine validate --seasons 2000-2026 --fetch
+uv run engine logos --seasons 2000-2026   # team logos -> round badges in web/public/logos
 uv run engine export                       # -> web/public/data
 uv run pytest
 ```
 
-`build` reports duplicates dropped, attendance coverage per source, arena names missing from `venues.yml`, teams missing from `teams.yml`, and feed arenas that were not open that year. Fix the reference YAML and rebuild; nothing is refetched.
+`build` reports duplicates dropped, attendance coverage per source, arena names missing from `venues.yml`, teams missing from `teams.yml`, and feed arenas that were not open that year. Fix the reference YAML and rebuild; nothing is refetched. Before about 2007 the feed names no arena, so the venue is the team's home ground from the nearest season with one, or from `data/reference/home_venues.yml` where that is wrong or missing (each entry cites its source).
 
 ## Web
 

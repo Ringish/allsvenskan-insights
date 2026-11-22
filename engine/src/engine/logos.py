@@ -1,9 +1,10 @@
 """Team badges for the web app: the feed's club logo on a round disc, or initials when there is no logo."""
 
 import io
+import json
 from pathlib import Path
-from urllib.parse import unquote
 
+import httpx
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 from engine.http import CachedClient
@@ -119,19 +120,54 @@ def logo_urls(years: list[int], ref: Reference, feed: Sportomedia) -> tuple[dict
     return urls, unknown
 
 
+WIKI_API = "https://en.wikipedia.org/w/api.php"
+
+
+def wiki_logo_url(client: CachedClient, tid: str, file: str) -> str | None:
+    """PNG rendering of a Wikipedia file; crests there are mostly SVG, which Pillow cannot read."""
+    params = {
+        "action": "query",
+        "titles": file,
+        "prop": "imageinfo",
+        "iiprop": "url",
+        "iiurlwidth": SIZE * 2,
+        "format": "json",
+    }
+    data = json.loads(client.get(f"{tid}-wikipedia.json", WIKI_API, params=params))
+    page = next(iter(data["query"]["pages"].values()))
+    info = page.get("imageinfo") or [{}]
+    return info[0].get("thumburl") or info[0].get("url")
+
+
+def _logo_bytes(
+    images: CachedClient, tid: str, team: dict, feed_url: str | None, offline: bool
+) -> bytes | None:
+    """The feed's logo, else the team's Wikipedia `logo_file`; None when neither can be had."""
+    sources = [(tid, lambda: feed_url)] if feed_url else []
+    if team.get("logo_file"):
+        sources.append((f"{tid}-wikipedia", lambda: wiki_logo_url(images, tid, team["logo_file"])))
+    for name, url_of in sources:
+        key = f"{name}.png"
+        if offline and not images.cached(key):
+            continue
+        try:
+            url = url_of() if not images.cached(key) else None
+            return images.get_bytes(key, url)
+        except httpx.HTTPError as e:
+            print(f"  {tid}: logo unavailable from {name} ({type(e).__name__})")
+    return None
+
+
 def logos(years: list[int], out: Path = OUT, offline: bool = False) -> None:
     ref = Reference.load()
     urls, unknown = logo_urls(years, ref, Sportomedia())
-    images = CachedClient("logos")
+    # Old logo hosts can be gone for good; give up quickly and fall back to initials.
+    images = CachedClient("logos", attempts=2)
     out.mkdir(parents=True, exist_ok=True)
     fallback = []
     for tid, team in sorted(ref.teams.items()):
-        url = urls.get(tid)
-        data = None
-        key = f"{tid}{Path(unquote(url)).suffix or '.png'}" if url else None
-        if key and (not offline or images.cached(key)):
-            data = images.get_bytes(key, url)
-        else:
+        data = _logo_bytes(images, tid, team, urls.get(tid), offline)
+        if data is None:
             fallback.append(tid)
         img = badge(team, data)
         img.save(out / f"{tid}.png", optimize=True)

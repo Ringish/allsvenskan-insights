@@ -1,22 +1,24 @@
 # Canonical teams. `aliases` are names seen in sources (feed, AllStat, Wikipedia).
 # `color` is the 3D tower color (picked for visibility on a dark map), `color2` the accent.
+# `logo_file` is a Wikipedia file used when the feed has no logo.
 # Teams not listed here are created automatically by `engine build` and reported.
 
 - {id: aik, name: AIK, short: AIK, city: Solna, color: "#F5C400", color2: "#111111", aliases: [AIK Fotboll]}
 - {id: afc-eskilstuna, name: AFC Eskilstuna, short: AFC, city: Eskilstuna, color: "#E4002B", color2: "#FFFFFF", aliases: [AFC United]}
-- {id: assyriska-ff, name: Assyriska FF, short: Assyriska, city: Södertälje, color: "#E30613", color2: "#FFFFFF", aliases: [Assyriska, Assyriska Fotbollsförening]}
-- {id: atvidabergs-ff, name: Åtvidabergs FF, short: Åtvidaberg, city: Åtvidaberg, color: "#5DADE2", color2: "#FFFFFF", aliases: [Åtvidaberg, Atvidabergs FF]}
+- {id: assyriska-ff, name: Assyriska FF, short: Assyriska, city: Södertälje, color: "#E30613", color2: "#FFFFFF", aliases: [Assyriska, Assyriska Fotbollsförening], logo_file: "File:Assyriska FF logo.svg"}
+- {id: atvidabergs-ff, name: Åtvidabergs FF, short: Åtvidaberg, city: Åtvidaberg, color: "#5DADE2", color2: "#FFFFFF", aliases: [Åtvidaberg, Atvidabergs FF], logo_file: "File:Atvidabergs FF.svg"}
 - {id: bk-hacken, name: BK Häcken, short: Häcken, city: Göteborg, color: "#FFD400", color2: "#000000", aliases: [Häcken, BK Hacken]}
+- {id: dalkurd-ff, name: Dalkurd FF, short: Dalkurd, city: Borlänge, aliases: [Dalkurd]}
 - {id: degerfors-if, name: Degerfors IF, short: Degerfors, city: Degerfors, color: "#D7263D", color2: "#FFFFFF", aliases: [Degerfors]}
 - {id: djurgardens-if, name: Djurgårdens IF, short: Djurgården, city: Stockholm, color: "#3D7DD8", color2: "#0B2A5B", aliases: [Djurgården, Djurgardens IF]}
-- {id: enkopings-sk, name: Enköpings SK, short: Enköping, city: Enköping, color: "#E2001A", color2: "#FFFFFF", aliases: [Enköping, Enköpings SK FK]}
+- {id: enkopings-sk, name: Enköpings SK, short: Enköping, city: Enköping, color: "#E2001A", color2: "#FFFFFF", aliases: [Enköping, Enköpings SK FK], logo_file: "File:Enkopings SK logo.svg"}
 - {id: falkenbergs-ff, name: Falkenbergs FF, short: Falkenberg, city: Falkenberg, color: "#FFDD00", color2: "#000000", aliases: [Falkenberg]}
 - {id: gais, name: GAIS, short: GAIS, city: Göteborg, color: "#1DA055", color2: "#000000", aliases: []}
-- {id: gefle-if, name: Gefle IF, short: Gefle, city: Gävle, color: "#6FA8DC", color2: "#FFFFFF", aliases: [Gefle]}
+- {id: gefle-if, name: Gefle IF, short: Gefle, city: Gävle, color: "#6FA8DC", color2: "#FFFFFF", aliases: [Gefle, Gefle IF FF]}
 - {id: gif-sundsvall, name: GIF Sundsvall, short: Sundsvall, city: Sundsvall, color: "#2F6FDE", color2: "#FFFFFF", aliases: [Sundsvall, GIF Sundsvall Fotboll]}
 - {id: halmstads-bk, name: Halmstads BK, short: Halmstad, city: Halmstad, color: "#1565C0", color2: "#FFFFFF", aliases: [Halmstad]}
 - {id: hammarby, name: Hammarby IF, short: Hammarby, city: Stockholm, color: "#00A65A", color2: "#FFFFFF", aliases: [Hammarby, Hammarby IF FF]}
-- {id: helsingborgs-if, name: Helsingborgs IF, short: Helsingborg, city: Helsingborg, color: "#E53935", color2: "#1E88E5", aliases: [Helsingborg, HIF]}
+- {id: helsingborgs-if, name: Helsingborgs IF, short: Helsingborg, city: Helsingborg, color: "#E53935", color2: "#1E88E5", aliases: [Helsingborg, Helsingborg IF, HIF]}
 - {id: if-brommapojkarna, name: IF Brommapojkarna, short: Brommapojkarna, city: Stockholm, color: "#E10600", color2: "#000000", aliases: [Brommapojkarna, BP]}
 - {id: if-elfsborg, name: IF Elfsborg, short: Elfsborg, city: Borås, color: "#FFE000", color2: "#000000", aliases: [Elfsborg]}
 - {id: ifk-goteborg, name: IFK Göteborg, short: Göteborg, city: Göteborg, color: "#2A7DE1", color2: "#FFFFFF", aliases: [IFK Goteborg, Göteborg]}
@@ -33,8 +35,8 @@
 - {id: orgryte-is, name: Örgryte IS, short: Örgryte, city: Göteborg, color: "#C8102E", color2: "#1B365D", aliases: [Örgryte, Orgryte IS]}
 - {id: osters-if, name: Östers IF, short: Öster, city: Växjö, color: "#E2001A", color2: "#FFFFFF", aliases: [Öster, Osters IF]}
 - {id: ostersunds-fk, name: Östersunds FK, short: Östersund, city: Östersund, color: "#D50032", color2: "#000000", aliases: [Östersund, Ostersunds FK, ÖFK]}
-- {id: syrianska-fc, name: Syrianska FC, short: Syrianska, city: Södertälje, color: "#E8B400", color2: "#C8102E", aliases: [Syrianska]}
+- {id: syrianska-fc, name: Syrianska FC, short: Syrianska, city: Södertälje, color: "#E8B400", color2: "#C8102E", aliases: [Syrianska], logo_file: "File:Syrianska.svg"}
 - {id: trelleborgs-ff, name: Trelleborgs FF, short: Trelleborg, city: Trelleborg, color: "#1F6FD1", color2: "#FFFFFF", aliases: [Trelleborg]}
 - {id: varbergs-bois, name: Varbergs BoIS, short: Varberg, city: Varberg, color: "#22A04B", color2: "#000000", aliases: [Varberg, Varbergs BoIS FC]}
 - {id: vasteras-sk, name: Västerås SK, short: Västerås, city: Västerås, color: "#4CAF50", color2: "#000000", aliases: [Västerås, VSK, Västerås SK FK]}
-- {id: vastra-frolunda-if, name: Västra Frölunda IF, short: V Frölunda, city: Göteborg, color: "#1E88E5", color2: "#FFFFFF", aliases: [Västra Frölunda, Frölunda]}
+- {id: vastra-frolunda-if, name: Västra Frölunda IF, short: V Frölunda, city: Göteborg, color: "#1E88E5", color2: "#FFFFFF", aliases: [Västra Frölunda, Frölunda], logo_file: "File:Vastra Frolunda IF logo.svg"}

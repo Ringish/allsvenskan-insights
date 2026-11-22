@@ -10,8 +10,9 @@ from engine.sources.allstat import AllStat
 from engine.sources.sportomedia import FeedMatch, Sportomedia, parse_match
 
 COMPETITION = {"id": "allsvenskan-men", "name": "Allsvenskan", "gender": "men", "tier": 1}
-# The feed has a few single-digit placeholders (e.g. 1); below this a figure is treated as missing.
-MIN_CROWD = 10
+# The feed has a placeholder 1 (2020); below this a figure is treated as missing.
+# 2021 rounds 1-8 report 8, the public-gathering cap at the time, which is kept.
+MIN_CROWD = 2
 # Every 2020 match was played without spectators (COVID-19 restrictions).
 CLOSED_DOORS_YEARS = {2020}
 

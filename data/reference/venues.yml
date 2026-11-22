@@ -6,29 +6,29 @@
 - {id: strawberry-arena, name: Strawberry Arena, city: Solna, lat: 59.3725, lon: 18.0, capacity: 54329, opened: 2012, wikidata: Q1138684,
    aliases: [Friends Arena, Nationalarenan, "Nationalarenan, Friends Arena", "Nationalarenan, Strawberry Arena"]}
 - {id: 3arena, name: 3Arena, city: Stockholm, lat: 59.29138889, lon: 18.08527778, capacity: 30001, opened: 2013, wikidata: Q2701834,
-   aliases: [Tele2 Arena, Stockholmsarenan]}
+   aliases: [Tele2 Arena, Tele 2 Arena, Stockholmsarenan]}
 - {id: rasunda, name: Råsunda, city: Solna, lat: 59.362777777, lon: 17.996388888, capacity: 36608, opened: 1937, closed: 2012, wikidata: Q725623,
    aliases: [Råsunda fotbollsstadion, Råsunda Stadion, Råsundastadion]}
 - {id: stockholms-stadion, name: Stockholms stadion, city: Stockholm, lat: 59.345278, lon: 18.078889, capacity: 14500, opened: 1912, wikidata: Q727078,
-   aliases: [Stadion, Stockholms Stadion, Stockholms olympiastadion]}
+   aliases: [Stadion, Stockholms Stadion, Stockholms Stadion 1, Stockholms olympiastadion, Olympiastadion]}
 - {id: soderstadion, name: Söderstadion, city: Stockholm, lat: 59.295833333, lon: 18.081944444, capacity: 12882, opened: 1967, closed: 2013, wikidata: Q1776735,
-   aliases: []}
+   aliases: [Söderstadion 1]}
 - {id: grimsta-ip, name: Grimsta IP, city: Stockholm, lat: 59.362222222, lon: 17.851666666, capacity: 4729, opened: 1963, wikidata: Q591583,
    aliases: [Grimsta IP 1]}
 - {id: eleda-stadion, name: Eleda Stadion, city: Malmö, lat: 55.583611111, lon: 12.987777777, capacity: 22500, opened: 2009, wikidata: Q867234,
-   aliases: [Swedbank Stadion, Nya Malmö Stadion]}
+   aliases: [Swedbank Stadion, Nya Malmö Stadion, Swedbank Arena@malmo-ff]}
 - {id: malmo-stadion, name: Malmö Stadion, city: Malmö, lat: 55.586111111, lon: 12.989166666, capacity: 26500, opened: 1958, wikidata: Q175960,
    aliases: [Malmö stadion]}
 - {id: malmo-ip, name: Malmö IP, city: Malmö, lat: 55.595, lon: 12.995556, capacity: 7600, opened: 1896, wikidata: Q6744417,
    aliases: []}
 - {id: gamla-ullevi, name: Gamla Ullevi, city: Göteborg, lat: 57.70583333, lon: 11.98083333, capacity: 18000, opened: 1916, wikidata: Q15077481,
-   aliases: []}
+   aliases: [Gamla Ullevi 1 Gräs]}
 - {id: ullevi, name: Ullevi, city: Göteborg, lat: 57.705833333, lon: 11.987222222, capacity: 43000, opened: 1958, wikidata: Q824352,
    aliases: [Nya Ullevi]}
 - {id: bravida-arena, name: Bravida Arena, city: Göteborg, lat: 57.7192, lon: 11.9306, capacity: 6300, opened: 2015, wikidata: Q18822195,
    aliases: [Nordic Wellness Arena, Hisingen Arena]}
 - {id: rambergsvallen, name: Rambergsvallen, city: Göteborg, lat: 57.718888888, lon: 11.930833333, capacity: 7000, opened: 1935, closed: 2014, wikidata: Q1326393,
-   aliases: []}
+   aliases: [Rambergsvallen 1 Gräs]}
 - {id: valhalla-ip, name: Valhalla IP, city: Göteborg, lat: 57.701386, lon: 11.988817, capacity: 4000, opened: 1963, wikidata: Q2509074,
    aliases: []}
 - {id: ruddalens-ip, name: Ruddalens IP, city: Göteborg, lat: 57.664694444, lon: 11.908888888, wikidata: Q31892101,
@@ -46,7 +46,7 @@
 - {id: behrn-arena, name: Behrn Arena, city: Örebro, lat: 59.26611111, lon: 15.22305556, capacity: 12674, opened: 1923, wikidata: Q814577,
    aliases: [Eyravallen, Örebro Arena]}
 - {id: np3-arena, name: NP3 Arena, city: Sundsvall, lat: 62.394166666, lon: 17.301111111, capacity: 8500, opened: 1903, wikidata: Q1780359,
-   aliases: [Norrporten Arena, Idrottsparken@gif-sundsvall]}
+   aliases: [Norrporten Arena, Norrport Arena@gif-sundsvall, Idrottsparken@gif-sundsvall]}
 - {id: jamtkraft-arena, name: Jämtkraft Arena, city: Östersund, lat: 63.194722222, lon: 14.655833333, capacity: 9165, opened: 2007, wikidata: Q3435821,
    aliases: []}
 - {id: guldfageln-arena, name: Guldfågeln Arena, city: Kalmar, lat: 56.69070278, lon: 16.31523333, capacity: 12500, opened: 2011, wikidata: Q1421187,
@@ -58,27 +58,31 @@
 - {id: spiris-arena, name: Spiris Arena, city: Växjö, lat: 56.879722222, lon: 14.776388888, capacity: 12000, opened: 2012, wikidata: Q1583034,
    aliases: [Myresjöhus Arena, Visma Arena, Spiris Arena 1]}
 - {id: vangavallen, name: Vångavallen, city: Trelleborg, lat: 55.38680556, lon: 13.15816667, capacity: 10000, opened: 1933, wikidata: Q1779950,
-   aliases: []}
+   aliases: [A-plan@trelleborgs-ff]}
 - {id: landskrona-ip, name: Landskrona IP, city: Landskrona, lat: 55.88993333, lon: 12.83761111, capacity: 10000, wikidata: Q739184,
    aliases: []}
 - {id: strandvallen, name: Strandvallen, city: Hällevik, lat: 56.0125, lon: 14.71666667, capacity: 7500, opened: 1953, wikidata: Q1848079,
    aliases: [Strandvallen A-plan]}
 - {id: stromvallen, name: Strömvallen, city: Gävle, lat: 60.673055555, lon: 17.1275, capacity: 6703, opened: 1903, wikidata: Q2301634,
-   aliases: []}
+   aliases: [Strömsvallen@gefle-if]}
 - {id: gavlevallen, name: Gavlevallen, city: Gävle, lat: 60.69194444, lon: 17.13444444, capacity: 6500, opened: 2015, wikidata: Q16632572,
    aliases: []}
 - {id: skarsjovallen, name: Skarsjövallen, city: Ljungskile, lat: 58.21666667, lon: 11.94388889, capacity: 6000, opened: 1984, wikidata: Q935604,
-   aliases: []}
+   aliases: [Starke Arvid Arena, HA Bygg Arena@ljungskile-sk]}  # sponsor names 2006-2010 (en.wikipedia Skarsjövallen)
 - {id: enavallen, name: Enavallen, city: Enköping, lat: 59.6325, lon: 17.06777778, capacity: 4500, wikidata: Q5375261,
    aliases: []}
 - {id: sodertalje-fotbollsarena, name: Södertälje fotbollsarena, city: Södertälje, lat: 59.187558701, lon: 17.570436431, capacity: 9500, opened: 2005, wikidata: Q1568614,
    aliases: [Södertälje Fotbollsarena]}
 - {id: kopparvallen, name: Kopparvallen, city: Åtvidaberg, lat: 58.194583333, lon: 15.995833333, capacity: 8000, opened: 1920, wikidata: Q1784085,
    aliases: []}
+- {id: falkenbergs-ip, name: Falkenbergs IP, city: Falkenberg, lat: 56.89776, lon: 12.508275, capacity: 5500,
+   aliases: [], closed: 2016}  # en.wikipedia Falkenbergs IP; capacity sources differ (4000 to 5500)
+- {id: barsta-ip, name: Bårsta IP, city: Södertälje, lat: 59.20222, lon: 17.60472,
+   aliases: []}  # en.wikipedia Bårsta IP: Assyriska's ground until late 2005
 - {id: falcon-alkoholfri-arena, name: Falcon Alkoholfri Arena, city: Falkenberg, lat: 56.893972222, lon: 12.511555555, capacity: 5500, opened: 2017, wikidata: Q23807273,
    aliases: []}
 - {id: studenternas, name: Studenternas IP, city: Uppsala, lat: 59.85, lon: 17.644444, capacity: 6500, opened: 1909, wikidata: Q4444527,
-   aliases: [Studenternas]}
+   aliases: [Studenternas, Studenternas IP 1]}
 - {id: hitachi-energy-arena, name: Hitachi Energy Arena, city: Västerås, lat: 59.6275, lon: 16.530555555, capacity: 15000, wikidata: Q1165409,
    aliases: []}
 - {id: arosvallen, name: Arosvallen, city: Västerås, lat: 59.62044722, lon: 16.54104444, capacity: 10000, opened: 1932, wikidata: Q698429,

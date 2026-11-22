@@ -142,3 +142,31 @@ def test_logo_urls_newest_season_wins():
     urls, unknown = logo_urls([2023, 2024], Reference.load(), Feed())
     assert urls["aik"] == "https://x/2024.png"
     assert unknown == {"Okänt FF"}
+
+
+def test_logo_falls_back_to_wikipedia_when_feed_host_is_gone():
+    import httpx
+
+    from engine.logos import _logo_bytes
+
+    class Images:
+        fetched: list[str] = []
+
+        def cached(self, key):
+            return False
+
+        def get(self, key, url, **kw):
+            page = {"imageinfo": [{"thumburl": "https://upload.wikimedia.org/x.svg.png"}]}
+            return json.dumps({"query": {"pages": {"1": page}}})
+
+        def get_bytes(self, key, url):
+            self.fetched.append(key)
+            if "dead" in url:
+                raise httpx.ConnectError("gone")
+            return b"png"
+
+    team = {"logo_file": "File:X.svg"}
+    images = Images()
+    assert _logo_bytes(images, "x", team, "https://dead/x.png", offline=False) == b"png"
+    assert images.fetched == ["x.png", "x-wikipedia.png"]
+    assert _logo_bytes(images, "x", {}, None, offline=False) is None

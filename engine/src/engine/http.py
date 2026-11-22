@@ -5,6 +5,7 @@ fetched again unless refresh=True, so parsing and rebuilding work offline.
 """
 
 import json
+import random
 import time
 from pathlib import Path
 
@@ -15,10 +16,21 @@ from engine.paths import RAW
 USER_AGENT = "allsvenskan-insights/0.1 (private research project)"
 
 
+RETRYABLE = (429, 500, 502, 503, 504)
+
+
 class CachedClient:
-    def __init__(self, source: str, min_interval: float = 1.0, raw_dir: Path = RAW):
+    """Adaptive pacing: requests are spaced by `interval` with +-20% jitter. A 429, 5xx or
+    network error doubles the interval (up to `max_interval`) and waits at least Retry-After;
+    each success eases it back toward `min_interval` by 5%."""
+
+    def __init__(
+        self, source: str, min_interval: float = 1.0, raw_dir: Path = RAW, max_interval: float = 60.0
+    ):
         self.dir = raw_dir / source
         self.min_interval = min_interval
+        self.max_interval = max_interval
+        self.interval = min_interval
         self._last = 0.0
         self._http = httpx.Client(timeout=30, headers={"User-Agent": USER_AGENT}, follow_redirects=True)
 
@@ -32,29 +44,37 @@ class CachedClient:
         return self.path(key).read_text(encoding="utf-8")
 
     def _throttle(self) -> None:
-        wait = self.min_interval - (time.monotonic() - self._last)
+        wait = self.interval * random.uniform(0.8, 1.2) - (time.monotonic() - self._last)
         if wait > 0:
             time.sleep(wait)
         self._last = time.monotonic()
+
+    def _back_off(self, reason: str, retry_after: float, attempt: int) -> None:
+        self.interval = min(self.max_interval, self.interval * 2)
+        pause = max(retry_after, self.interval * 2**attempt)
+        print(f"  {reason}: pausing {pause:.0f}s, then 1 request per {self.interval:.1f}s", flush=True)
+        time.sleep(pause)
 
     def _send(self, method: str, url: str, **kw) -> str:
         return self._request(method, url, **kw).text
 
     def _request(self, method: str, url: str, **kw) -> httpx.Response:
-        delay = 2.0
-        for attempt in range(5):
+        attempts = 6
+        for attempt in range(attempts):
             self._throttle()
             try:
                 r = self._http.request(method, url, **kw)
-                if r.status_code in (429, 500, 502, 503, 504):
-                    raise httpx.HTTPStatusError("retryable", request=r.request, response=r)
-                r.raise_for_status()
-                return r
-            except (httpx.TransportError, httpx.HTTPStatusError):
-                if attempt == 4:
+            except httpx.TransportError as e:
+                if attempt == attempts - 1:
                     raise
-                time.sleep(delay)
-                delay *= 2
+                self._back_off(type(e).__name__, 0, attempt)
+                continue
+            if r.status_code in RETRYABLE and attempt < attempts - 1:
+                self._back_off(f"HTTP {r.status_code}", _retry_after(r), attempt)
+                continue
+            r.raise_for_status()
+            self.interval = max(self.min_interval, self.interval * 0.95)
+            return r
         raise AssertionError("unreachable")
 
     def get(self, key: str, url: str, refresh: bool = False, **kw) -> str:
@@ -91,3 +111,10 @@ class CachedClient:
         tmp = p.with_suffix(p.suffix + ".tmp")
         tmp.write_text(text, encoding="utf-8")
         tmp.replace(p)
+
+
+def _retry_after(r: httpx.Response) -> float:
+    try:
+        return float(r.headers.get("Retry-After", 0))
+    except ValueError:
+        return 0.0

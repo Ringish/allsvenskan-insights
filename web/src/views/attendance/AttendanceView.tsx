@@ -13,6 +13,7 @@ import { FollowPicker } from "./FollowPicker";
 import { buildLayers, type Tower, towersFor } from "./layers";
 import { SidePanel } from "./SidePanel";
 import { useFollow } from "./useFollow";
+import { useTweenedHeights } from "./useTweenedHeights";
 import { VenueHistory } from "./VenueHistory";
 
 type Mode = "matchday" | "skyline";
@@ -70,7 +71,7 @@ export default function AttendanceView({ data, theme }: { data: Dataset; theme: 
   const focusVenue = biggest ? data.venues.get(biggest.venue!)! : null;
   const camera = useCamera(timeline.playing, focusVenue ? [focusVenue.lon, focusVenue.lat] : null);
   const scale = Math.min(1, Math.max(0.06, 2 ** ((5.35 - camera.viewState.zoom) * 0.85)));
-  const towers = towersFor(states, teamOrder, data, homeOf, follow.slots, scale);
+  const towers = useTweenedHeights(towersFor(states, teamOrder, data, homeOf, follow.slots, scale));
 
   // Pulse only animates while something on screen glows.
   const glowing =

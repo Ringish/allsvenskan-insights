@@ -91,27 +91,23 @@ interface Args {
 
 const at = (t: Tower, z: number): [number, number, number] => [t.lon, t.lat, z];
 
-// A white ring drawn as a mask icon, tinted per followed team.
-let ringUrl: string | null = null;
-function ring(): string {
-  if (ringUrl) return ringUrl;
+// Placeholder icon for a team without a badge image (drawn fully transparent).
+let blankUrl: string | null = null;
+function blank(): string {
+  if (blankUrl) return blankUrl;
   const c = document.createElement("canvas");
-  c.width = c.height = 128;
-  const g = c.getContext("2d")!;
-  g.strokeStyle = "#fff";
-  g.lineWidth = 14;
-  g.beginPath();
-  g.arc(64, 64, 56, 0, Math.PI * 2);
-  g.stroke();
-  ringUrl = c.toDataURL();
-  return ringUrl;
+  c.width = c.height = 4;
+  blankUrl = c.toDataURL();
+  return blankUrl;
 }
 
 export function buildLayers(a: Args): Layer[] {
   const { theme, towers, data, scale: k } = a;
   const ground = LAND_H * k;
   const following = towers.some((t) => t.follow >= 0);
-  const focus = (t: Tower) => (following && t.follow < 0 ? DIM : 1);
+  // While following, other teams turn grey: tower, base and badge.
+  const greyed = (t: Tower) => following && t.follow < 0;
+  const focus = (t: Tower) => (greyed(t) ? DIM : 1);
   const followColor = (t: Tower): RGB => hex(theme.follow[t.follow]);
   const known = towers.filter((t) => t.known).sort((x, y) => y.height - x.height);
   const empty = towers.filter((t) => !t.absent && (t.missing || t.closedDoors));
@@ -120,7 +116,7 @@ export function buildLayers(a: Args): Layer[] {
     t.fill == null ? rampColor(theme.fillRamp, 0.5) : rampColor(theme.fillRamp, t.fill / SOLD_OUT);
   const followKey = towers.map((t) => t.follow).join();
   // Badge size in pixels grows as the camera moves in.
-  const badgePx = (t: Tower) => 26 + 14 * (1 - k) + (t.follow >= 0 ? 6 : 0);
+  const badgePx = (t: Tower) => 26 + 14 * (1 - k) + (t.follow >= 0 ? 8 : 0);
   const top = (t: Tower) => at(t, ground + t.height * k);
 
   const layers: Layer[] = [
@@ -168,8 +164,9 @@ export function buildLayers(a: Args): Layer[] {
       getElevation: (t) => (t.follow >= 0 ? 2400 : 900),
       getFillColor: (t) => {
         if (t.follow >= 0) return [...followColor(t), 255];
+        if (greyed(t)) return [...theme.muted, 140];
         const c = t.team.color;
-        return [...(c ? hex(c) : theme.arc), 255 * Math.max(0.35, t.presence) * focus(t)];
+        return [...(c ? hex(c) : theme.arc), 255 * Math.max(0.35, t.presence)];
       },
       updateTriggers: { getFillColor: [theme.mode, followKey], getElevation: [followKey] },
     }),
@@ -188,11 +185,13 @@ export function buildLayers(a: Args): Layer[] {
       getFillColor: (t) => {
         const c = colorOf(t);
         if (!t.known) return [...c, 0];
-        return t.venue.id === a.selected ? [...theme.flare, 255] : [...c, (120 + 135 * t.presence) * focus(t)];
+        if (t.venue.id === a.selected) return [...theme.flare, 255];
+        return greyed(t) ? [...theme.muted, 90 + 110 * t.presence] : [...c, 120 + 135 * t.presence];
       },
       material: { ambient: 0.55, diffuse: 0.65, shininess: 40, specularColor: [90, 90, 90] },
       updateTriggers: { getFillColor: [a.selected, theme.mode, followKey], getPosition: [k] },
-      transitions: { getElevation: { duration: 450, easing: easeOut }, getFillColor: 300 },
+      // Heights are tweened by the view, so badges and labels move with the tower tops.
+      transitions: { getFillColor: 300 },
     }),
     new ScatterplotLayer<Tower>({
       id: "empty",
@@ -296,42 +295,31 @@ export function buildLayers(a: Args): Layer[] {
     );
   }
 
-  // Team badges on top of the towers; followed teams get a ring in their color.
-  const badgeAlpha = (t: Tower) => (t.absent || !t.team.logo ? 0 : 255 * Math.min(1, 0.25 + t.presence) * focus(t));
+  // Team badges on top of the towers. Greyed-out teams draw the badge's silhouette as a grey disc.
+  const badgeAlpha = (t: Tower) => (t.absent || !t.team.logo ? 0 : 255 * Math.min(1, 0.25 + t.presence));
   layers.push(
-    new IconLayer<Tower>({
-      id: "badge-rings",
-      data: towers.filter((t) => t.follow >= 0 && !t.absent),
-      getIcon: () => ({ id: "ring", url: ring(), width: 128, height: 128, mask: true }),
-      getPosition: top,
-      getPixelOffset: (t) => [0, -(badgePx(t) / 2 + 3)],
-      getSize: (t) => badgePx(t) + 8,
-      sizeUnits: "pixels",
-      getColor: (t) => [...followColor(t), 255],
-      billboard: true,
-      parameters: { depthCompare: "always" },
-      updateTriggers: { getColor: [theme.mode, followKey], getSize: [k], getPixelOffset: [k] },
-    }),
     new IconLayer<Tower>({
       id: "badges",
       data: towers,
       pickable: true,
-      getIcon: (t) => ({
-        id: t.teamId,
-        url: t.team.logo ? a.assetBase + t.team.logo : ring(),
-        width: 128,
-        height: 128,
-      }),
+      getIcon: (t) =>
+        greyed(t)
+          ? { id: `${t.teamId}-grey`, url: t.team.logo ? a.assetBase + t.team.logo : blank(), width: 128, height: 128, mask: true }
+          : { id: t.teamId, url: t.team.logo ? a.assetBase + t.team.logo : blank(), width: 128, height: 128 },
       getPosition: top,
       getPixelOffset: (t) => [0, -(badgePx(t) / 2 + 3)],
       getSize: badgePx,
       sizeUnits: "pixels",
-      getColor: (t) => [255, 255, 255, badgeAlpha(t)],
+      getColor: (t) => (greyed(t) ? [...theme.mutedBadge, badgeAlpha(t)] : [255, 255, 255, badgeAlpha(t)]),
       billboard: true,
       alphaCutoff: 0.02,
       parameters: { depthCompare: "always" },
-      updateTriggers: { getColor: [followKey], getSize: [k, followKey], getPixelOffset: [k, followKey] },
-      transitions: { getPosition: { duration: 450, easing: easeOut }, getColor: 300 },
+      updateTriggers: {
+        getIcon: [followKey],
+        getColor: [followKey, theme.mode],
+        getSize: [k, followKey],
+        getPixelOffset: [k, followKey],
+      },
     }),
   );
 
@@ -403,8 +391,4 @@ function declutter<T extends { position: [number, number, number]; text: string;
     if (out.length >= max) break;
   }
   return out;
-}
-
-function easeOut(t: number) {
-  return 1 - (1 - t) ** 3;
 }

@@ -24,6 +24,7 @@ class SeasonReport:
     venue: Counter = field(default_factory=Counter)
     anachronisms: list[str] = field(default_factory=list)
     missing_raw: int = 0
+    unplayed: int = 0
 
     def line(self) -> str:
         n = self.teams
@@ -34,6 +35,8 @@ class SeasonReport:
         out = f"{self.year}: {self.matches} matches, {n} teams{flag} | attendance {att} | venue {ven}"
         if self.missing_raw:
             out += f" | {self.missing_raw} match details not fetched"
+        if self.unplayed:
+            out += f" | {self.unplayed} not yet played"
         for d in self.duplicates:
             out += f"\n    duplicate dropped: {d}"
         for a in self.anachronisms:
@@ -50,7 +53,11 @@ def load_feed_season(feed: Sportomedia, year: int, report: SeasonReport) -> list
         if not feed.client.cached(key):
             report.missing_raw += 1
             continue
-        out.append(parse_match(year, json.loads(feed.client.read(key))["data"]["match"]["match"]))
+        m = parse_match(year, json.loads(feed.client.read(key))["data"]["match"]["match"])
+        if m.status != "FINISHED":
+            report.unplayed += 1
+            continue
+        out.append(m)
     return out
 
 

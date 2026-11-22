@@ -5,6 +5,7 @@ attendance (`spectators`) is only exposed by the single-match query, so a full
 season costs one list call plus one call per match. Everything is cached raw.
 """
 
+import json
 from collections.abc import Iterator
 from dataclasses import dataclass
 
@@ -85,9 +86,19 @@ class Sportomedia:
         data = self._q("seasons.json", SEASONS_Q, {}, refresh=refresh)
         return [s["configSeasonStartYear"] for s in data["seasons"]]
 
-    def season_match_ids(self, year: int, refresh: bool = False) -> list[int]:
+    def season_matches(self, year: int, refresh: bool = False) -> list[dict]:
         data = self._q(f"{year}/season.json", SEASON_MATCHES_Q, {"year": year}, refresh=refresh)
-        return [m["id"] for m in data["matchesForLeague"]["matches"]]
+        return data["matchesForLeague"]["matches"]
+
+    def season_match_ids(self, year: int, refresh: bool = False) -> list[int]:
+        return [m["id"] for m in self.season_matches(year, refresh=refresh)]
+
+    def cached_status(self, year: int, match_id: int) -> str | None:
+        """Status of the cached match detail, or None when it is not cached."""
+        key = f"{year}/match-{match_id}.json"
+        if not self.client.cached(key):
+            return None
+        return json.loads(self.client.read(key))["data"]["match"]["match"].get("status")
 
     def teams(self, year: int, refresh: bool = False) -> list[dict]:
         data = self._q(f"{year}/teams.json", TEAMS_Q, {"year": year}, refresh=refresh)

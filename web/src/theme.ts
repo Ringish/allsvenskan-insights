@@ -20,6 +20,9 @@ export interface SceneTheme {
   labelHalo: RGBA;
   /** Categorical slots for followed teams (reference palette slots 3-6; blue is the towers, orange the light-mode flare). */
   follow: string[];
+  /** Greyed-out (not followed) towers and bases, and their badge discs. */
+  muted: RGB;
+  mutedBadge: RGB;
 }
 
 export function hex(h: string): RGB {
@@ -47,6 +50,8 @@ export const THEMES: Record<"light" | "dark", SceneTheme> = {
     label: [240, 239, 236, 255],
     labelHalo: [14, 17, 22, 230],
     follow: ["#199e70", "#c98500", "#d55181", "#008300"],
+    muted: hex("#3a414c"),
+    mutedBadge: hex("#59616d"),
   },
   light: {
     mode: "light",
@@ -63,6 +68,8 @@ export const THEMES: Record<"light" | "dark", SceneTheme> = {
     label: [11, 11, 11, 255],
     labelHalo: [252, 252, 251, 230],
     follow: ["#1baf7a", "#eda100", "#e87ba4", "#008300"],
+    muted: hex("#c4c9d0"),
+    mutedBadge: hex("#aab0b8"),
   },
 };
 

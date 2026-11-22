@@ -4,7 +4,7 @@ import io
 from pathlib import Path
 from urllib.parse import unquote
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 from engine.http import CachedClient
 from engine.normalize import Reference, _key
@@ -70,8 +70,19 @@ def badge(team: dict, logo: bytes | None) -> Image.Image:
 
     if logo:
         mark = Image.open(io.BytesIO(logo)).convert("RGBA")
+        # Some source images carry wide transparent or white padding; trim it so every crest fills the disc.
+        ink = ImageChops.difference(mark.convert("RGB"), Image.new("RGB", mark.size, "white")).convert("L")
+        alpha = mark.getchannel("A").point(lambda v: 255 if v > 40 else 0)
+        visible = ImageChops.multiply(ink.point(lambda v: 255 if v > 12 else 0), alpha)
+        bbox = visible.getbbox()
+        if bbox:
+            mark = mark.crop(bbox)
         box = int(r * 1.32)
-        mark.thumbnail((box, box), Image.Resampling.LANCZOS)
+        # Scale to fit both ways; thumbnail() would never enlarge a small source.
+        f = box / max(mark.size)
+        mark = mark.resize(
+            (max(1, round(mark.width * f)), max(1, round(mark.height * f))), Image.Resampling.LANCZOS
+        )
         img.alpha_composite(mark, (int(c - mark.width / 2), int(c - mark.height / 2)))
     else:
         text = _initials(team.get("short") or team["name"])
@@ -82,14 +93,13 @@ def badge(team: dict, logo: bytes | None) -> Image.Image:
     return img.resize((SIZE, SIZE), Image.Resampling.LANCZOS)
 
 
-def logo_urls(
-    years: list[int], ref: Reference, feed: Sportomedia, offline: bool = False
-) -> tuple[dict[str, str], set[str]]:
+def logo_urls(years: list[int], ref: Reference, feed: Sportomedia) -> tuple[dict[str, str], set[str]]:
     """Team id -> logo URL from the feed's team lists, newest season first. Also returns unmatched names."""
     urls: dict[str, str] = {}
     unknown: set[str] = set()
     for year in sorted(years, reverse=True):
-        if offline and not feed.client.cached(f"{year}/teams.json"):
+        # Team lists are saved by `engine fetch`; this command only downloads images.
+        if not feed.client.cached(f"{year}/teams.json"):
             continue
         for t in feed.teams(year):
             tid = next(
@@ -110,7 +120,7 @@ def logo_urls(
 
 def logos(years: list[int], out: Path = OUT, offline: bool = False) -> None:
     ref = Reference.load()
-    urls, unknown = logo_urls(years, ref, Sportomedia(), offline)
+    urls, unknown = logo_urls(years, ref, Sportomedia())
     images = CachedClient("logos")
     out.mkdir(parents=True, exist_ok=True)
     fallback = []
